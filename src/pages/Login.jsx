@@ -182,7 +182,23 @@ const Login = () => {
               <button type="submit" className="loginBtnUnique">Login</button>
             </form>
           )}
-          <div className="flex justify-center"><p className="mt-3 hover:text-amber-500 w-fit " onClick={reg}>New User ? Then Register First!!!!</p></div>
+          <div className="flex justify-center">
+            {activeTab === "admin" ? (
+              <p
+                className="mt-3 w-fit cursor-pointer hover:text-amber-500"
+                onClick={() => routeHandler('/owner-login')}
+              >
+                Are you owner?
+              </p>
+            ) : (
+              <p
+                className="mt-3 hover:text-amber-500 w-fit cursor-pointer"
+                onClick={reg}
+              >
+                New User ? Then Register First!!!!
+              </p>
+            )}
+          </div>
 
         </div>
       </div>

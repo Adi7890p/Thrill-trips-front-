@@ -3,13 +3,43 @@ import jsPDF from 'jspdf';
 import { Pencil, XCircle, FileDown } from 'lucide-react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-// import { log } from 'console';
 
 const Bookings = () => {
     const [bookings, setBookings] = useState([]);
-    // const [pnm, setpnm] = useState([]);
     const [c, sc] = useState(1);
-    // const [cc,scc] = useState(1);
+
+    const getTomorrowStart = () => {
+        const d = new Date();
+        d.setHours(0, 0, 0, 0);
+        d.setDate(d.getDate() + 1);
+        return d;
+    };
+
+    const parseBookingDate = (value) => {
+        if (!value) return null;
+
+        // dd-mm-yyyy
+        if (/^\d{2}-\d{2}-\d{4}$/.test(value)) {
+            const [dd, mm, yyyy] = value.split('-').map(Number);
+            return new Date(yyyy, mm - 1, dd);
+        }
+
+        // yyyy-mm-dd
+        if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+            const [yyyy, mm, dd] = value.split('-').map(Number);
+            return new Date(yyyy, mm - 1, dd);
+        }
+
+        const d = new Date(value);
+        return Number.isNaN(d.getTime()) ? null : d;
+    };
+
+    const isOlderThanTomorrow = (bookingDate) => {
+        const d = parseBookingDate(bookingDate);
+        if (!d) return false;
+        d.setHours(0, 0, 0, 0);
+        return d < getTomorrowStart();
+    };
 
     useEffect(
         () => {
@@ -17,32 +47,15 @@ const Bookings = () => {
                 await axios.get('https://react.adityakuril.me/bookings/' + sessionStorage.getItem("username")).then((res) => {
                     setBookings(res.data);
                     console.log("data : ", res.data);
-
                 });
-
             }
             helo();
         }, [c]
     )
-    // useEffect(
-    //     () => {
-    //         bookings.map((elem) => {
-    //             axios.get('https://react.adityakuril.me/bookpark/' + elem.pid).then((res) => {
-    //                 setpnm((prev)=>[...prev,res.data]);
-    //                 sc(c+1);
-    //                 // console.log(res.data);
-    //             })
-    //         })
-    //     }, [cc,c]
-    // )
-    // const [p, sp] = useState('');
-    // const [pnm,setpnm]=useState('');
-
 
     const navigate = useNavigate();
     const editBooking = (_id, pid) => {
         console.log('clicked');
-
         sessionStorage.setItem("status", "edit");
         sessionStorage.setItem("pid", pid);
         sessionStorage.setItem("uid", _id);
@@ -52,13 +65,11 @@ const Bookings = () => {
         await axios.delete('https://react.adityakuril.me/cancel/' + _id).then((res) => {
             alert(pid + " " + res.data.message);
             sc(c + 1);
-            // scc(cc+1);
         })
     }
     const reciptGen = async (idx) => {
         const doc = new jsPDF();
         let y = 10;
-
 
         // Header styling
         doc.setFontSize(18);
@@ -168,26 +179,56 @@ const Bookings = () => {
                         <th className='w-1/8 text-center'>Download</th>
                     </tr>
                 </thead>
-                <tbody className=' border-amber-400 bg-transparent rounded-4xl  h-full'>
+                <tbody className='border-amber-400 bg-transparent rounded-4xl h-full'>
 
-                    {bookings.length != 0 ? (bookings.map((elem, idx) => {
-                        return (
+                    {bookings.length !== 0 ? (
+                        bookings.map((elem, idx) => {
+                            const disableActions = isOlderThanTomorrow(elem.date);
 
-                            <tr key={idx} className='flex border-b border-dashed hover:bg-yellow-200 transition-all duration-300 justify-between w-full p-3 items-center  text-orange-600 flex-wrap '>
-                                <td className='w-1/8 text-center' >{idx + 1}</td>
-                                <td className='w-1/8 text-center wrap-break-word' >{elem.park.pname}</td>
-                                <td className='w-1/8 text-center' >{elem.date}</td>
-                                <td className='w-1/8 text-center' >{elem.persons}</td>
-                                <td className='w-1/8 text-center' >{(elem.addons) ? elem.addons : "No Add-Ons"}</td>
-                                <td className='w-1/8 text-center' >{elem.bill}/-</td>
-                                <td className='w-1/8 text-center flex flex-col justify-center px-1 gap-1' ><button className='w-full hover:bg-blue-500 hover:text-white hover:border-blue-500 transition-all duration-300 flex border-2 rounded-full justify-evenly p-1' onClick={() => editBooking(elem._id, elem.pid)}><Pencil className='' /> Edit</button><button className='w-full flex border-2 rounded-full justify-evenly p-1 hover:bg-red-500 hover:text-white hover:border-red-500 transition-all duration-300' onClick={() => cancelBooking(elem._id, elem.park.pname)}><XCircle /> Cancel</button></td>
-                                <td className='w-1/8 text-center flex justify-center px-2' ><button onClick={() => reciptGen(idx)} className='w-full flex border-2 rounded-full justify-evenly p-1 hover:bg-green-500 hover:text-white hover:border-green-500 transition-all duration-300'><FileDown /> Receipt</button></td>
+                            return (
+                                <tr
+                                    key={elem._id || idx}
+                                    className='flex border-b border-dashed hover:bg-yellow-200 transition-all duration-300 justify-between w-full p-3 items-center text-orange-600 flex-wrap'
+                                >
+                                    <td className='w-1/8 text-center' >{idx + 1}</td>
+                                    <td className='w-1/8 text-center wrap-break-word' >{elem.park.pname}</td>
+                                    <td className='w-1/8 text-center' >{elem.date}</td>
+                                    <td className='w-1/8 text-center' >{elem.persons}</td>
+                                    <td className='w-1/8 text-center' >{(elem.addons) ? elem.addons : "No Add-Ons"}</td>
+                                    <td className='w-1/8 text-center' >{elem.bill}/-</td>
+                                    <td className='w-1/8 text-center flex flex-col justify-center px-1 gap-1' >
+                                        <button
+                                            className='w-full hover:bg-blue-500 hover:text-white hover:border-blue-500 transition-all duration-300 flex border-2 rounded-full justify-evenly p-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-current disabled:hover:border-current'
+                                            onClick={() => editBooking(elem._id, elem.pid)}
+                                            disabled={disableActions}
+                                            title={disableActions ? 'Edit disabled for past/today bookings' : ''}
+                                        >
+                                            <Pencil className='' /> Edit
+                                        </button>
 
-                            </tr>
-                        )
-                    }))
-                        : (<tr className='flex border-b border-dashed hover:bg-yellow-200 transition-all duration-300 justify-between w-full p-3 items-center  text-orange-600 flex-wrap '>No Bookings yet!!! <b className='border-y-2 p-2 border-amber-700'>Click Explore to Book parks !!</b></tr>)
-                    }
+                                        <button
+                                            className='w-full flex border-2 rounded-full justify-evenly p-1 hover:bg-red-500 hover:text-white hover:border-red-500 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-current disabled:hover:border-current'
+                                            onClick={() => cancelBooking(elem._id, elem.park.pname)}
+                                            disabled={disableActions}
+                                            title={disableActions ? 'Cancel disabled for past/today bookings' : ''}
+                                        >
+                                            <XCircle /> Cancel
+                                        </button>
+                                    </td>
+                                    <td className='w-1/8 text-center flex justify-center px-2' ><button onClick={() => reciptGen(idx)} className='w-full flex border-2 rounded-full justify-evenly p-1 hover:bg-green-500 hover:text-white hover:border-green-500 transition-all duration-300'><FileDown /> Receipt</button></td>
+                                </tr>
+                            )
+                        })
+                    ) : (
+                        <tr>
+                            <td colSpan={8} className='p-4 text-center text-orange-600'>
+                                <span>No Bookings yet!!! </span>
+                                <b className='border-y-2 p-2 border-amber-700 ml-2'>
+                                    Click Explore to Book parks !!
+                                </b>
+                            </td>
+                        </tr>
+                    )}
 
 
 
@@ -198,4 +239,3 @@ const Bookings = () => {
 };
 
 export default Bookings;
-

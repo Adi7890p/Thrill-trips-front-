@@ -8,6 +8,7 @@ import { ScrollToPlugin } from "gsap/ScrollToPlugin";
 import expressImg from '../assets/images/express.png';
 import mealImg from '../assets/images/meal.png';
 import lockerImg from '../assets/images/locker.png';
+
 gsap.registerPlugin(ScrollToPlugin);
 
 const Booking = () => {
@@ -27,8 +28,10 @@ const Booking = () => {
   
   const [park, setPark] = useState();
   const [persons, setPersons] = useState(1);
-  const todayStr = useMemo(() => {
+
+  const tomorrowStr = useMemo(() => {
     const d = new Date();
+    d.setDate(d.getDate() + 1); // tomorrow
     const yyyy = d.getFullYear();
     const mm = String(d.getMonth() + 1).padStart(2, '0');
     const dd = String(d.getDate()).padStart(2, '0');
@@ -58,8 +61,8 @@ const Booking = () => {
       });
     }
     , [Infinity])
-  // store date in DD-MM-YYYY format as requested
-  const [selectedDate, setSelectedDate] = useState(() => isoToDisplay(todayStr));
+  // store date in DD-MM-YYYY format
+  const [selectedDate, setSelectedDate] = useState(() => isoToDisplay(tomorrowStr));
   const dateInputRef = useRef(null);
 
   // console.log(params);
@@ -260,12 +263,10 @@ const Booking = () => {
                 role="button"
                 tabIndex={0}
                 onClick={() => {
-                  // Try to open native picker on the input element directly (user gesture)
                   if (dateInputRef.current) {
                     try {
                       dateInputRef.current.showPicker && dateInputRef.current.showPicker();
                     } catch (err) {
-                      // some browsers may still block showPicker; focus as fallback
                       dateInputRef.current.focus();
                     }
                   }
@@ -278,17 +279,16 @@ const Booking = () => {
                 }}
                 className='w-full font-semibold text-[#053345] rounded-2xl border-2 bg-[#BEDBFF] py-1 px-3 cursor-pointer'
               >
-                {selectedDate || isoToDisplay(todayStr)}
+                {selectedDate || isoToDisplay(tomorrowStr)}
               </div>
-
 
               <input
                 ref={dateInputRef}
                 type="date"
                 style={{ fontFamily: 'verdana' }}
                 className='absolute inset-0 w-full h-full opacity-0 pointer-events-none'
-                min={todayStr}
-                value={displayToIso(selectedDate) || todayStr}
+                min={tomorrowStr}
+                value={displayToIso(selectedDate) || tomorrowStr}
                 onChange={(e) => setSelectedDate(isoToDisplay(e.target.value))}
               />
             </div>
@@ -314,4 +314,3 @@ const Booking = () => {
 }
 
 export default Booking
-

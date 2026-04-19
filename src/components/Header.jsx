@@ -71,7 +71,9 @@ const Header = (props) => {
 
 
                         {sessionStorage.getItem("username") ? <div style={{ fontFamily: 'bt' }} onClick={userr} className='capitalize border-2 -mt-3 border-dotted tracking-wider text-3xl bg-[linear-gradient(135deg,#d63384,#6610f2,#0d6efd)] cursor-pointer text-white px-3 py-0.5 rounded-full h-12' >{sessionStorage.getItem("username")[0]}</div> :
-                            <Link to="/login" onClick={(e) => routeHandler("/login", e)}>Login</Link>
+                            sessionStorage.getItem("admin") ? <Link to="/admin" onClick={(e) => routeHandler("/admin", e)}>Admin Panel</Link> :
+                                sessionStorage.getItem("owner") ? <Link to="/owner-dashboard" onClick={(e) => routeHandler("/owner-dashboard", e)}>Dashboard</Link> :
+                                    <Link to="/login" onClick={(e) => routeHandler("/login", e)}>Login</Link>
                         }
 
 
