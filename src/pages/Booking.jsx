@@ -5,6 +5,9 @@ import axios from 'axios';
 import { MousePointer2, IndianRupee, MessageSquareHeart } from 'lucide-react';
 import { gsap } from 'gsap'
 import { ScrollToPlugin } from "gsap/ScrollToPlugin";
+import expressImg from '../assets/images/express.png';
+import mealImg from '../assets/images/meal.png';
+import lockerImg from '../assets/images/locker.png';
 gsap.registerPlugin(ScrollToPlugin);
 
 const Booking = () => {
@@ -220,7 +223,7 @@ const Booking = () => {
               <label htmlFor='express' className='border-3 overflow-y-hidden  border-dashed border-amber-700 p-4 rounded-2xl flex items-center flex-col w-[25vw] h-[245px] bg-blue-200 hover:h-[360px] transition-all duration-500'>
                 <input type="checkbox" id="express" value='express pass' className='hidden' onChange={(e) => checkhandler(e.target)
                 } />
-                <img src={'../src/assets/images/express.png'} className='mb-4 h-30 w-30' alt="" />
+                <img src={expressImg} className='mb-4 h-30 w-30' alt="" />
                 <h4 className='text-xl text-cyan-950' style={{ fontFamily: 'mouldy' }}>Express Pass</h4>
                 <h4 className='text-xl  border-dashed border-x-2 border-amber-950 rounded  px-1 font-extrabold text-cyan-700' style={{ fontFamily: 'verdana' }}>₹250</h4>
 
@@ -230,7 +233,7 @@ const Booking = () => {
               <label htmlFor='meal' className='border-3 overflow-y-hidden  border-dashed p-4 border-amber-700 rounded-2xl flex items-center flex-col w-[25vw] h-[225px] bg-blue-200 hover:h-[325px] transition-all duration-500'>
                 <input type="checkbox" id="meal" value='meal pass' className='hidden' onChange={(e) => checkhandler(e.target)
                 } />
-                <img src={'../src/assets/images/meal.png'} className='mb-4 h-30 w-30' alt="" />
+                <img src={mealImg} className='mb-4 h-30 w-30' alt="" />
                 <h4 className='text-xl text-cyan-950' style={{ fontFamily: 'mouldy' }}>Meal Pass </h4>
                 <h4 className='text-xl  border-dashed border-x-2 border-amber-950 rounded  px-1 font-extrabold text-cyan-700' style={{ fontFamily: 'verdana' }}>₹180</h4>
                 <p className='text-red-800 leading-4.5'>Enjoy hassle-free dining with prepaid meals at participating thrill trips restaurant inside the park.(services by Thrill Trips,not particular park)</p>
@@ -239,7 +242,7 @@ const Booking = () => {
               <label htmlFor='locker' className='border-3 overflow-y-hidden  border-dashed p-4 border-amber-700 rounded-2xl flex items-center flex-col w-[25vw] h-[245px] bg-blue-200 hover:h-[325px] transition-all duration-500'>
                 <input type="checkbox" id="locker" value='locker pass' className='hidden' onChange={(e) => checkhandler(e.target)
                 } />
-                <img src={'../src/assets/images/locker.png'} className='mb-4 h-30 w-30' alt="" />
+                <img src={lockerImg} className='mb-4 h-30 w-30' alt="" />
                 <h4 className='text-xl text-cyan-950' style={{ fontFamily: 'mouldy' }}>Locker Pass </h4>
                 <h4 className='text-xl  border-dashed border-x-2 border-amber-950 rounded  px-1 font-extrabold text-cyan-700' style={{ fontFamily: 'verdana' }}>₹100</h4>
                 <p className='text-red-800 leading-4.5'>Store your valuables like phones, wallets, or bags safely while you enjoy the park.(services by Thrill Trips,not particular park)</p>
